@@ -4,6 +4,9 @@
 
 This project provides tools to convert HEP packets into GigAPI Line Protocol.
 
+> [!WARNING]
+> This is a demo tool. Native HEPv3 support is expected in GigAPI
+
 ## Features
 
 - Converts HEP packets to GigAPI/InfluxDB Line Protocol
