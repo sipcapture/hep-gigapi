@@ -36,7 +36,7 @@ class HepToLineProtocolConverter {
         protocol_header: decoded.rcinfo,
         create_date: this.getHepTimestamp(decoded.rcinfo),
         raw: decoded.payload || "",
-        type: decoded.rcinfo.payload_type || decoded.rcinfo.proto_type || 0
+        type: decoded.rcinfo.proto_type || decoded.rcinfo.protoType || 0
       };
       
       // Convert to Line Protocol
