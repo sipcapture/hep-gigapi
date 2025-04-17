@@ -32,7 +32,7 @@ bun install @duckdb/node-api hep-js parsip axios
 ### Basic Conversion
 
 ```javascript
-import HepToLineProtocolConverter from './hep-to-lineprotocol-converter.js';
+import HepToLineProtocolConverter from './hep-proto.js';
 import hepjs from 'hep-js';
 
 // Create an instance of the converter
@@ -64,7 +64,7 @@ console.log(lineProtocol);
 ### Using the Server
 
 ```javascript
-import HepToInfluxDBServer from './hep-to-influxdb-server.js';
+import HepToInfluxDBServer from './hep-server.js';
 
 // Create and start the server with custom configuration
 const server = new HepToInfluxDBServer({
