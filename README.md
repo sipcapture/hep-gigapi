@@ -69,7 +69,7 @@ import HepToInfluxDBServer from './hep-server.js';
 // Create and start the server with custom configuration
 const server = new HepToInfluxDBServer({
   hepPort: 9060,
-  influxDbUrl: 'http://localhost:8086',
+  influxDbUrl: 'http://localhost:7971',
   influxDbDatabase: 'hep',
   batchSize: 1000,
   flushInterval: 5000,
@@ -87,7 +87,7 @@ server.initialize().catch(console.error);
 |--------|-------------|---------|
 | hepPort | Port to listen for HEP packets | 9060 |
 | hepBindAddress | Address to bind HEP server | 0.0.0.0 |
-| influxDbUrl | InfluxDB server URL | http://localhost:8086 |
+| influxDbUrl | InfluxDB server URL | http://localhost:7971 |
 | influxDbDatabase | InfluxDB database name | hep |
 | batchSize | Number of records to batch before sending | 1000 |
 | flushInterval | Maximum time between flushes (ms) | 5000 |
