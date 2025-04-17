@@ -67,12 +67,10 @@ async function main() {
     console.log(multiLineProtocol);
     
     // 3. Send to InfluxDB (uncomment to use)
-    /*
     console.log('\n--- Sending to InfluxDB ---');
     const influxUrl = 'http://localhost:7971/write?db=mydb';
     const response = await axios.post(influxUrl, multiLineProtocol);
     console.log(`Response: ${response.status} ${response.statusText}`);
-    */
     
     // 4. Save to file
     console.log('\n--- Saving to File ---');
@@ -80,17 +78,6 @@ async function main() {
     fs.writeFileSync(outputFile, multiLineProtocol);
     console.log(`Line Protocol data saved to: ${outputFile}`);
     
-    // 5. Process HEP packets from a capture file (example)
-    /*
-    console.log('\n--- Reading from Capture File ---');
-    const captureFile = path.join(__dirname, 'hep_capture.pcap');
-    if (fs.existsSync(captureFile)) {
-      // This is just a placeholder - you would need actual pcap parsing logic
-      const capturedPackets = parseHepFromPcap(captureFile);
-      const captureLineProtocol = converter.convertPackets(capturedPackets);
-      console.log(`Converted ${capturedPackets.length} packets`);
-    }
-    */
     
   } catch (error) {
     console.error('Error in example:', error);
