@@ -14,13 +14,13 @@ import path from 'path';
 class HepToInfluxDBServer {
   constructor(config = {}) {
     this.config = {
-      hepPort: config.hepPort || 9060,
-      hepBindAddress: config.hepBindAddress || '0.0.0.0',
-      influxDbUrl: config.influxDbUrl || 'http://localhost:7971',
-      influxDbDatabase: config.influxDbDatabase || 'hep',
-      batchSize: config.batchSize || 1000,
-      flushInterval: config.flushInterval || 5000, // ms
-      maxBufferSize: config.maxBufferSize || 10000,
+      hepPort: config.hepPort || process.env.PORT || 9060,
+      hepBindAddress: config.hepBindAddress || process.env.HOST || '0.0.0.0',
+      influxDbUrl: config.influxDbUrl || process.env.INFLUX_DBURL || 'http://localhost:7971',
+      influxDbDatabase: config.influxDbDatabase || process.env.INFLUXB_DBNAME || 'hep',
+      batchSize: config.batchSize || process.env.BATCH_SIZE || 1000,
+      flushInterval: config.flushInterval || process.env.FLUSH_INTERVAL || 5000, // ms
+      maxBufferSize: config.maxBufferSize || process.env.MAX_BUFFER || 10000,
       debug: config.debug || false,
       writeToFile: config.writeToFile || false,
       outputDir: config.outputDir || './data'
