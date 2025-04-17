@@ -29,6 +29,46 @@ bun install @duckdb/node-api hep-js parsip axios
 
 ## Usage
 
+### Gigapi Bundle
+```yaml
+services:
+  gigapi:
+    image: ghcr.io/gigapi/gigapi:latest
+    container_name: gigapi
+    hostname: gigapi
+    restart: unless-stopped
+    volumes:
+      - ./data:/data
+    ports:
+      - "7971:7971"
+    environment:
+      - GIGAPI_ENABLED=true
+      - GIGAPI_MERGE_TIMEOUT_S=10
+      - GIGAPI_ROOT=/data
+      - PORT=7971
+  gigapi-querier:
+    image: ghcr.io/gigapi/gigapi-querier:latest
+    container_name: gigapi-querier
+    hostname: gigapi-querier
+    volumes:
+      - ./data:/data
+    ports:
+      - "7972:7972"
+    environment:
+      - DATA_DIR=/data
+      - PORT=7972
+  hep-gigapi:
+    image: ghcr.io/sipcapture/hep-gigapi:latest
+    container_name: hep-gigapi
+    hostname: hep-gigapi
+    ports:
+      - "9060:9060/udp"
+      - "9060:9060/tcp"
+    environment:
+      - PORT=9060
+      - INFLUX_DBURL=http://gigapi:7971
+```
+
 ### Basic Conversion
 
 ```javascript
