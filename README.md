@@ -16,18 +16,10 @@ This project provides tools to convert HEP packets into GigAPI Line Protocol.
 
 ## Components
 
-1. **HepToLineProtocolConverter**: Core library for converting HEP packets to Line Protocol
-2. **Usage Example**: Simple example demonstrating how to use the converter
-3. **HEP to InfluxDB Server**: Complete server implementation that receives HEP packets and forwards them to InfluxDB
+1. **hep-proto**: Core library for converting HEP packets to Line Protocol
+2. **hep-server**: Complete HEP:GigAPI relay server implementation
+3. **example**: Simple example demonstrating how to use the converter
 
-## Installation
-
-```bash
-# Install dependencies
-npm install @duckdb/node-api hep-js parsip axios
-# or with Bun
-bun install @duckdb/node-api hep-js parsip axios
-```
 
 ## Usage
 
@@ -78,7 +70,14 @@ curl -X POST "http://gigapi:7972/query?db=hep"   -H "Content-Type: application/j
 
 <br>
 
-## Development
+## Installation
+
+```bash
+# Install dependencies
+npm install @duckdb/node-api hep-js parsip axios
+# or with Bun
+bun install @duckdb/node-api hep-js parsip axios
+```
 
 ### Basic Conversion
 
