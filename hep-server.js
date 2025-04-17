@@ -287,7 +287,7 @@ class HepToInfluxDBServer {
 if (require.main === module) {
   const server = new HepToInfluxDBServer({
     debug: true,
-    writeToFile: true
+    writeToFile: false
   });
   
   server.initialize().catch(error => {
