@@ -1,7 +1,7 @@
 FROM oven/bun
-WORKDIR /usr/src/app
+WORKDIR /app
 COPY . .
 RUN bun install
-USER bun
+EXPOSE 9060/udp
 EXPOSE 9060/tcp
 ENTRYPOINT [ "bun", "run", "hep-server.js" ]
