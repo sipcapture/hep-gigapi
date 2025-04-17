@@ -109,6 +109,3 @@ Where:
 - Tags include network information like `src_ip`, `dst_ip`, `src_port`, `dst_port`
 - Fields include the packet data, timestamp information, and parsed SIP headers
 
-For SIP packets (type 1), additional fields are extracted:
-- `sip_method`: SIP method (INVITE, BYE, etc.)
-- `sip_status
