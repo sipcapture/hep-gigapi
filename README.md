@@ -1,4 +1,6 @@
-# HEP to InfluxDB Line Protocol Converter
+<img src="https://github.com/user-attachments/assets/ddd8d553-3740-4a98-b365-76c0b971d031" width=200 />
+
+# HEP:GigAPI Line Protocol Relay
 
 This project provides tools to convert HEP packets into GigAPI Line Protocol.
 
@@ -68,6 +70,13 @@ services:
       - PORT=9060
       - INFLUX_DBURL=http://gigapi:7971
 ```
+### GigAPI Query
+```bash
+curl -X POST "http://gigapi:7972/query?db=hep"   -H "Content-Type: application/json"    -d '{"query": "SELECT * FROM hep_1"}'  
+{"results":[{"__timestamp":"1744905216588281769","capture_id":"2001","capture_pass":"myHep","create_date":"1744905210441","date":"2025-04-17T00:00:00Z","dst_ip":"192.168.1.2","dst_port":"5060","hour":"15","payload":"INVITE sip:alice@example.com SIP/2.0\\r\\nVia: SIP/2.0/UDP 192.168.1.1:5060;branch=z9hG4bK776asdhds\\r\\nFrom: Bob \u003csip:bob@example.com\u003e;tag=1928301774\\r\\nTo: Alice \u003csip:alice@example.com\u003e\\r\\nCall-ID: a84b4c76e66710@example.com\\r\\nCSeq: 314159 INVITE\\r\\nContact: \u003csip:bob@192.168.1.1:5060\u003e\\r\\nContent-Type: application/sdp\\r\\nContent-Length: 0\\r\\n\\r\\n","payload_size":"327","src_ip":"192.168.1.1","src_port":"5060","time":"1744905210441000000","time_sec":"1744905210","time_usec":"441000"},{"__timestamp":"1744905216588281850","capture_id":"2001","capture_pass":"myHep","create_date":"1744905210442","date":"2025-04-17T00:00:00Z","dst_ip":"192.168.1.2","dst_port":"5060","hour":"15","payload":"INVITE sip:alice@example.com SIP/2.0\\r\\nVia: SIP/2.0/UDP 192.168.1.1:5060;branch=z9hG4bK776asdhds\\r\\nFrom: Bob \u003csip:bob@example.com\u003e;tag=1928301774\\r\\nTo: Alice \u003csip:alice@example.com\u003e\\r\\nCall-ID: a84b4c76e66710@example.com\\r\\nCSeq: 314159 INVITE\\r\\nContact: \u003csip:bob@192.168.1.1:5060\u003e\\r\\nContent-Type: application/sdp\\r\\nContent-Length: 0\\r\\n\\r\\n","payload_size":"327","src_ip":"192.168.1.1","src_port":"5060","time":"1744905210442000000","time_sec":"1744905210","time_usec":"442000"}]}
+```
+
+<br>
 
 ### Basic Conversion
 
