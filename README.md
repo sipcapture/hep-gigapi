@@ -1,6 +1,6 @@
 <img src="https://github.com/user-attachments/assets/ddd8d553-3740-4a98-b365-76c0b971d031" width=200 />
 
-# HEP:GigAPI Line Protocol Relay
+# HEP ➡️ GigAPI Line Protocol Relay
 
 This project provides tools to convert HEP packets into GigAPI Line Protocol.
 
