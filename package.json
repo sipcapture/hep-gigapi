@@ -1,0 +1,11 @@
+{
+  "name": "hep2gig",
+  "version": "1.0.0",
+  "description": "HEP3 to GigAPI Line Protocol converter",
+  "dependencies": {
+    "@duckdb/node-api": "^1.2.2-alpha.18",
+    "axios": "^1.8.4",
+    "hep-js": "^1.0.22",
+    "parsip": "^1.0.7"
+  }
+}
