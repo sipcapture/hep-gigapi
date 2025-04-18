@@ -30,13 +30,14 @@ class HepToLineProtocolConverter {
     try {
       // Decode the HEP packet
       const decoded = hepjs.decapsulate(data);
-      
+      console.log('DEBUGHEP FULL:', JSON.stringify(decoded, null, 2));
       // Extract the HEP data
       const hepData = {
         protocol_header: decoded.rcinfo,
         create_date: this.getHepTimestamp(decoded.rcinfo),
         raw: decoded.payload || "",
-        type: decoded.rcinfo.proto_type || decoded.rcinfo.protoType || 0
+        // HEP proto_type is decoded as payloadType by hep-js
+        type: decoded.rcinfo.payloadType || 0
       };
       
       // Convert to Line Protocol

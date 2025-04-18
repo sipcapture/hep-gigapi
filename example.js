@@ -26,8 +26,7 @@ function createTestHepPacket() {
     dstPort: 5060,
     timeSeconds: Math.floor(Date.now() / 1000),
     timeUseconds: (Date.now() % 1000) * 1000,
-    protocolType: 1, // UDP
-    protocol: 'SIP'
+    proto_type: 1, // SIP
   };
 
   const payload = 
