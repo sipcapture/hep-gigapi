@@ -42,6 +42,6 @@ services:
     - "HEP_PORT=9060"
     - "HEP_PROTO=udp4"
     - "LOOP=1"
-    restart: unless-stopped
+    restart: no
     depends_on:
       - hep-gigapi

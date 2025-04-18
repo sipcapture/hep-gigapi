@@ -30,7 +30,6 @@ class HepToLineProtocolConverter {
     try {
       // Decode the HEP packet
       const decoded = hepjs.decapsulate(data);
-      console.log('DEBUGHEP FULL:', JSON.stringify(decoded, null, 2));
       // Extract the HEP data
       const hepData = {
         protocol_header: decoded.rcinfo,
