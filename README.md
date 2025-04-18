@@ -26,7 +26,10 @@ This project provides tools to convert HEP packets into GigAPI Line Protocol.
 
 ## Usage
 
-### Gigapi Bundle
+<img src="https://github.com/user-attachments/assets/c52335cb-b5ca-4b7c-91ae-8d77683f313d" width=800 />
+
+
+### Gigapi + Homer Bundle
 ```yaml
 services:
   gigapi:
