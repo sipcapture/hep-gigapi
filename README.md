@@ -1,6 +1,6 @@
 <img src="https://github.com/user-attachments/assets/ddd8d553-3740-4a98-b365-76c0b971d031" width=200 />
 
-# HEP ➡️ GigAPI Line Protocol Relay
+# HEP ➡️ GigAPI Relay
 
 This project provides tools to convert HEP packets into GigAPI Line Protocol.
 
@@ -26,7 +26,7 @@ This project provides tools to convert HEP packets into GigAPI Line Protocol.
 
 ## Usage
 
-<img src="https://github.com/user-attachments/assets/c52335cb-b5ca-4b7c-91ae-8d77683f313d" width=800 />
+<img src="https://github.com/user-attachments/assets/1f206cea-2a4c-426c-9400-c4223fdd8f30" width=800 />
 
 
 ### Gigapi + Homer Bundle
