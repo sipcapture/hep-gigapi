@@ -159,64 +159,40 @@ class HepToLineProtocolConverter {
    * @returns {Object} Field key-value pairs
    */
   extractFields(header, payload, type) {
-    const fields = {};
+    const fields = {
+      create_date: this.getHepTimestamp(header).getTime(),
+      time_sec: parseInt(header.timeSeconds, 10),
+      time_usec: parseInt(header.timeUseconds, 10)
+    };
     
-    // Common fields
-    fields.create_date = this.getHepTimestamp(header).getTime();
-    
-    // If the payload is SIP (type 1), try to parse it
-    if (type === 1 && payload) {
-      try {
-        const sipData = getSIP(payload);
-        if (sipData) {
-          // Extract SIP headers
-          if (sipData.headers) {
-            for (const [key, value] of Object.entries(sipData.headers)) {
-              // Use the first value if it's an array
-              let fieldValue = Array.isArray(value) ? value[0] : value;
-              
-              // Ensure no newlines in the field value
-              if (typeof fieldValue === 'string') {
-                fieldValue = fieldValue.replace(/\r\n|\n|\r/g, '\\r\\n');
-              }
-              
-              fields[`sip_${key.toLowerCase()}`] = fieldValue;
-            }
-          }
-          
-          // Add method or response code
-          if (sipData.method) fields.sip_method = sipData.method;
-          if (sipData.status) fields.sip_status = parseInt(sipData.status, 10);
-          
-          // Add call-id as a specific field for easier querying
-          if (sipData.headers && sipData.headers['Call-ID']) {
-            let callId = Array.isArray(sipData.headers['Call-ID']) 
-              ? sipData.headers['Call-ID'][0] 
-              : sipData.headers['Call-ID'];
-              
-            // Ensure no newlines in call-id
-            if (typeof callId === 'string') {
-              callId = callId.replace(/\r\n|\n|\r/g, '\\r\\n');
-            }
-            
-            fields.call_id = callId;
-          }
-        }
-      } catch (e) {
-        if (this.debug) console.error('Error parsing SIP payload:', e);
-      }
-    }
-    
-    // Add the raw payload as a field with escaped newlines
     if (payload) {
       fields.payload = payload.replace(/\r\n|\n|\r/g, '\\r\\n');
       fields.payload_size = payload.length;
     }
-    
-    // Add timestamp components
-    if (header.timeSeconds) {
-      fields.time_sec = parseInt(header.timeSeconds, 10);
-      fields.time_usec = parseInt(header.timeUseconds, 10);
+
+    // Fast path for non-SIP packets
+    if (type !== 1) return fields;
+
+    // SIP-specific extraction
+    try {
+      const sipData = getSIP(payload);
+      if (!sipData || !sipData.headers) return fields;
+
+      // Extract method/status
+      if (sipData.method) fields.sip_method = sipData.method;
+      if (sipData.status) fields.sip_status = parseInt(sipData.status, 10);
+
+      // Extract Call-ID directly
+      const callId = sipData.headers['Call-ID'];
+      if (callId) fields.call_id = Array.isArray(callId) ? callId[0] : callId;
+
+      // Batch process headers
+      for (const [key, value] of Object.entries(sipData.headers)) {
+        if (!value) continue;
+        fields[`sip_${key.toLowerCase()}`] = Array.isArray(value) ? value[0] : value;
+      }
+    } catch (e) {
+      if (this.debug) console.error('Error parsing SIP payload:', e);
     }
     
     return fields;

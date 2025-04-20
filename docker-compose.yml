@@ -41,7 +41,8 @@ services:
     - "HEP_SERVER=hep-gigapi"
     - "HEP_PORT=9060"
     - "HEP_PROTO=udp4"
-    - "LOOP=1"
-    restart: no
+    - "LOOP=400"
+    - "SLEEP=1800"
+    restart: unless-stopped
     depends_on:
       - hep-gigapi
