@@ -238,7 +238,7 @@ class HepToLineProtocolConverter {
       for (const headerName of this.sipHeaders) {
         const headerValue = sipData.headers[headerName];
         if (!headerValue) continue;
-
+        
         // Handle both raw and parsed values
         if (typeof headerValue === 'object' && headerValue.raw !== undefined) {
           const rawValue = String(headerValue.raw).trim();
@@ -261,6 +261,19 @@ class HepToLineProtocolConverter {
           // Special handling for From and To headers
           if (headerName.toLowerCase() === 'from' || headerName.toLowerCase() === 'to') {
             fields[`${headerName.toLowerCase()}_user`] = this.extractUserFromUri(stringValue);
+          }
+
+          if (headerName.toLowerCase() === 'call-id') {
+            fields["call-id"] = stringValue;
+            if (!fields["correlation_id"]) {
+              fields["correlation_id"] = stringValue;
+            }
+            continue;
+          }
+
+          if (headerName.toLowerCase() === 'correlation_id') {
+            fields["correlation_id"] = stringValue;
+            continue;
           }
           
           fields[`sip_${headerName.toLowerCase()}`] = stringValue;
