@@ -257,8 +257,7 @@ class HepToLineProtocolConverter {
         } else {
           // Handle direct string values
           const value = Array.isArray(headerValue) ? headerValue[0] : headerValue;
-          const stringValue = String(value).trim();
-          
+          const stringValue = String(value.raw).trim();
           // Special handling for From and To headers
           if (headerName.toLowerCase() === 'from' || headerName.toLowerCase() === 'to') {
             fields[`${headerName.toLowerCase()}_user`] = this.extractUserFromUri(stringValue);
