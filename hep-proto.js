@@ -11,6 +11,16 @@ import { getSIP } from 'parsip';
 class HepToLineProtocolConverter {
   constructor() {
     this.debug = false;
+    // Default SIP headers to extract
+    this.sipHeaders = [
+      'Call-ID',
+      'From',
+      'To',
+      'CSeq',
+      'User-Agent',
+    ];
+    // Whether to include parsed values in addition to raw values
+    this.includeParsedValues = false;
   }
 
   /**
@@ -19,6 +29,25 @@ class HepToLineProtocolConverter {
    */
   setDebug(enable) {
     this.debug = !!enable;
+  }
+
+  /**
+   * Set which SIP headers should be extracted
+   * @param {Array<string>} headers - Array of SIP header names to extract
+   */
+  setSipHeaders(headers) {
+    if (!Array.isArray(headers)) {
+      throw new Error('SIP headers must be provided as an array');
+    }
+    this.sipHeaders = headers.map(h => h.toLowerCase());
+  }
+
+  /**
+   * Set whether to include parsed values in addition to raw values
+   * @param {boolean} include - Whether to include parsed values
+   */
+  setIncludeParsedValues(include) {
+    this.includeParsedValues = !!include;
   }
 
   /**
@@ -152,6 +181,24 @@ class HepToLineProtocolConverter {
   }
 
   /**
+   * Extract user part from a SIP URI
+   * @param {string} uri - The SIP URI to parse
+   * @returns {string} The user part of the URI
+   */
+  extractUserFromUri(uri) {
+    try {
+      // Remove any angle brackets and extract the URI part
+      const cleanUri = uri.replace(/[<>]/g, '');
+      // Extract the user part before the @ symbol
+      const match = cleanUri.match(/^sip:([^@]+)@/);
+      return match ? match[1] : cleanUri;
+    } catch (e) {
+      if (this.debug) console.error('Error extracting user from URI:', e);
+      return uri;
+    }
+  }
+
+  /**
    * Extract fields from HEP protocol header and payload
    * @param {Object} header - HEP protocol header
    * @param {string} payload - Raw packet payload
@@ -178,18 +225,46 @@ class HepToLineProtocolConverter {
       const sipData = getSIP(payload);
       if (!sipData || !sipData.headers) return fields;
 
-      // Extract method/status
-      if (sipData.method) fields.sip_method = sipData.method;
-      if (sipData.status) fields.sip_status = parseInt(sipData.status, 10);
+      // Extract method/status and set the method field
+      if (sipData.method) {
+        fields.sip_method = String(sipData.method);
+        fields.method = String(sipData.method);
+      } else if (sipData.status) {
+        fields.sip_status = parseInt(sipData.status, 10);
+        fields.method = String(sipData.status);
+      }
 
-      // Extract Call-ID directly
-      const callId = sipData.headers['Call-ID'];
-      if (callId) fields.call_id = Array.isArray(callId) ? callId[0] : callId;
+      // Process only configured headers
+      for (const headerName of this.sipHeaders) {
+        const headerValue = sipData.headers[headerName];
+        if (!headerValue) continue;
 
-      // Batch process headers
-      for (const [key, value] of Object.entries(sipData.headers)) {
-        if (!value) continue;
-        fields[`sip_${key.toLowerCase()}`] = Array.isArray(value) ? value[0] : value;
+        // Handle both raw and parsed values
+        if (typeof headerValue === 'object' && headerValue.raw !== undefined) {
+          const rawValue = String(headerValue.raw).trim();
+          
+          // Special handling for From and To headers
+          if (headerName.toLowerCase() === 'from' || headerName.toLowerCase() === 'to') {
+            fields[`${headerName.toLowerCase()}_user`] = this.extractUserFromUri(rawValue);
+          }
+          
+          fields[`sip_${headerName.toLowerCase()}`] = rawValue;
+          
+          // Optionally include parsed value if configured
+          if (this.includeParsedValues && headerValue.parsed) {
+            fields[`sip_${headerName.toLowerCase()}_parsed`] = JSON.stringify(headerValue.parsed);
+          }
+        } else {
+          // Handle direct string values
+          const value = Array.isArray(headerValue) ? headerValue[0] : headerValue;
+          const stringValue = String(value.raw).trim();
+          // Special handling for From and To headers
+          if (headerName.toLowerCase() === 'from' || headerName.toLowerCase() === 'to') {
+            fields[`${headerName.toLowerCase()}_user`] = this.extractUserFromUri(stringValue);
+          }
+          
+          fields[`sip_${headerName.toLowerCase()}`] = stringValue;
+        }
       }
     } catch (e) {
       if (this.debug) console.error('Error parsing SIP payload:', e);
