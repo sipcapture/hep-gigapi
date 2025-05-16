@@ -46,17 +46,6 @@ services:
       - GIGAPI_MERGE_TIMEOUT_S=10
       - GIGAPI_ROOT=/data
       - PORT=7971
-  gigapi-querier:
-    image: ghcr.io/gigapi/gigapi-querier:latest
-    container_name: gigapi-querier
-    hostname: gigapi-querier
-    volumes:
-      - ./data:/data
-    ports:
-      - "7972:7972"
-    environment:
-      - DATA_DIR=/data
-      - PORT=7972
   hep-gigapi:
     image: ghcr.io/sipcapture/hep-gigapi:latest
     container_name: hep-gigapi
@@ -70,7 +59,7 @@ services:
 ```
 ### GigAPI Query
 ```bash
-curl -X POST "http://gigapi:7972/query?db=hep" \
+curl -X POST "http://gigapi:7971/query?db=hep" \
      -H "Content-Type: application/json"  \
      -d '{"query": "SELECT * FROM hep_1"}'
 
