@@ -135,8 +135,8 @@ server.initialize().catch(console.error);
 |--------|-------------|---------|
 | hepPort | Port to listen for HEP packets | 9060 |
 | hepBindAddress | Address to bind HEP server | 0.0.0.0 |
-| influxDbUrl | InfluxDB server URL | http://localhost:7971 |
-| influxDbDatabase | InfluxDB database name | hep |
+| influxDbUrl | GigAPI or InfluxDB server URL | http://localhost:7971 |
+| influxDbDatabase | GigAPI or InfluxDB database name | hep |
 | batchSize | Number of records to batch before sending | 1000 |
 | flushInterval | Maximum time between flushes (ms) | 5000 |
 | maxBufferSize | Maximum buffer size before forced flush | 10000 |
