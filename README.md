@@ -228,6 +228,21 @@ curl --http2-prior-knowledge -X POST \
   http://localhost:8080/test/api
 ```
 
+### HepToInfluxDBServer
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| hepPort | Port to listen for HEP packets | 9060 |
+| hepBindAddress | Address to bind HEP server | 0.0.0.0 |
+| influxDbUrl | GigAPI or InfluxDB server URL | http://localhost:7971 |
+| influxDbDatabase | GigAPI or InfluxDB database name | hep |
+| batchSize | Number of records to batch before sending | 1000 |
+| flushInterval | Maximum time between flushes (ms) | 5000 |
+| maxBufferSize | Maximum buffer size before forced flush | 10000 |
+| debug | Enable debug logging | false |
+| writeToFile | Save Line Protocol to files | false |
+| outputDir | Directory for output files | ./data |
+
 ## Output Format
 
 The converter creates InfluxDB Line Protocol data with the following structure:
