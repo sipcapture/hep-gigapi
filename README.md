@@ -13,9 +13,85 @@ This project provides tools to convert HEP packets into GigAPI Line Protocol.
 - Maintains the same column structure and table as hep
 - Parses SIP payload data to extract useful fields
 - Can be used as a library or as a standalone server
-- Supports both TCP and UDP for HEP packet reception
+- Supports all of the following for HEP packet reception:
+  - UDP
+  - TCP
+  - HTTP/2 (optional, POST endpoint for raw HEPv3 binary)
 - Batch processing for efficient InfluxDB writes
 - Optional file output for debugging or offline processing
+
+## Quickstart: All Protocols (Local Development)
+
+```js
+import HepToInfluxDBServer from './hep-server.js';
+
+const server = new HepToInfluxDBServer({
+  hepPort: 9060, // UDP/TCP port
+  hepBindAddress: '0.0.0.0',
+  influxDbUrl: 'http://localhost:7971',
+  influxDbDatabase: 'hep',
+  batchSize: 1000,
+  flushInterval: 5000,
+  debug: true,
+  // Enable HTTP/2 HEPv3 ingestion (optional)
+  http2Port: 8080, // HTTP/2 port
+  http2BindAddress: '0.0.0.0', // HTTP/2 bind address
+  http2Endpoint: '/test/api', // HTTP/2 POST endpoint
+});
+
+server.initialize().catch(console.error);
+```
+
+- **UDP/TCP**: Send HEPv3 packets to `hepPort` (default: 9060)
+- **HTTP/2**: POST raw HEPv3 binary to `http://localhost:8080/test/api` (see below)
+
+### HTTP/2 HEPv3 Ingestion Example
+
+If enabled, you can POST raw HEPv3 binary packets to the configured HTTP/2 endpoint:
+
+```http
+POST /test/api HTTP/2
+Host: localhost:8080
+Content-Type: application/octet-stream
+
+<raw HEPv3 binary>
+```
+
+Example with curl (using HTTP/2):
+
+```bash
+curl --http2-prior-knowledge -X POST \
+  -H "Content-Type: application/octet-stream" \
+  --data-binary @packet.bin \
+  http://localhost:8080/test/api
+```
+
+## Configuration Options
+
+| Option           | Description                                         | Default     |
+|------------------|-----------------------------------------------------|-------------|
+| hepPort          | Port to listen for HEP packets (UDP/TCP)            | 9060        |
+| hepBindAddress   | Address to bind HEP server (UDP/TCP)                | 0.0.0.0     |
+| influxDbUrl      | InfluxDB server URL                                 | http://localhost:7971 |
+| influxDbDatabase | InfluxDB database name                              | hep         |
+| batchSize        | Number of records to batch before sending           | 1000        |
+| flushInterval    | Maximum time between flushes (ms)                   | 5000        |
+| maxBufferSize    | Maximum buffer size before forced flush             | 10000       |
+| debug            | Enable debug logging                                | false       |
+| writeToFile      | Save Line Protocol to files                         | false       |
+| outputDir        | Directory for output files                          | ./data      |
+| http2Port        | Port for HTTP/2 HEPv3 ingestion (optional)          | undefined   |
+| http2BindAddress | Address for HTTP/2 server (optional)                | undefined   |
+| http2Endpoint    | HTTP/2 POST endpoint path (optional)                | undefined   |
+
+- **To enable HTTP/2 ingestion, set all three: `http2Port`, `http2BindAddress`, and `http2Endpoint`.**
+- If not set, HTTP/2 server will not start.
+
+## Testing All Sockets Locally
+
+- **UDP**: Use a HEP generator (e.g., hepgen) or a tool that can send HEPv3 packets to `localhost:9060` (UDP).
+- **TCP**: Use a HEP generator or netcat to send HEPv3 packets to `localhost:9060` (TCP).
+- **HTTP/2**: Use the curl example above, or any HTTP/2 client, to POST a raw HEPv3 binary to `http://localhost:8080/test/api`.
 
 ## Components
 
@@ -121,13 +197,36 @@ const server = new HepToInfluxDBServer({
   influxDbDatabase: 'hep',
   batchSize: 1000,
   flushInterval: 5000,
-  debug: true
+  debug: true,
+  // Enable HTTP/2 HEPv3 ingestion (optional)
+  http2Port: 8080, // HTTP/2 port
+  http2BindAddress: '0.0.0.0', // HTTP/2 bind address
+  http2Endpoint: '/test/api', // HTTP/2 POST endpoint
 });
 
 server.initialize().catch(console.error);
 ```
 
-## Configuration Options
+### HTTP/2 HEPv3 Ingestion Example
+
+If enabled, you can POST raw HEPv3 binary packets to the configured HTTP/2 endpoint:
+
+```http
+POST /test/api HTTP/2
+Host: localhost:8080
+Content-Type: application/octet-stream
+
+<raw HEPv3 binary>
+```
+
+Example with curl (using HTTP/2):
+
+```bash
+curl --http2-prior-knowledge -X POST \
+  -H "Content-Type: application/octet-stream" \
+  --data-binary @packet.bin \
+  http://localhost:8080/test/api
+```
 
 ### HepToInfluxDBServer
 

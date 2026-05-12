@@ -23,7 +23,11 @@ class HepToInfluxDBServer {
       maxBufferSize: config.maxBufferSize || process.env.MAX_BUFFER || 10000,
       debug: config.debug || false,
       writeToFile: config.writeToFile || false,
-      outputDir: config.outputDir || './data'
+      outputDir: config.outputDir || './data',
+      // HTTP/2 HEPv3 ingestion options
+      http2Port: config.http2Port || process.env.HTTP2_PORT,
+      http2BindAddress: config.http2BindAddress || process.env.HTTP2_HOST,
+      http2Endpoint: config.http2Endpoint || process.env.HTTP2_ENDPOINT
     };
 
     this.buffer = [];
@@ -53,6 +57,11 @@ class HepToInfluxDBServer {
       
       // Start the server
       await this.startServer();
+      
+      // Conditionally start HTTP/2 HEPv3 ingestion server
+      if (this.config.http2Port && this.config.http2Endpoint) {
+        this.startHttp2Server();
+      }
       
       // Set up the flush interval
       this.flushIntervalId = setInterval(() => {
@@ -241,6 +250,43 @@ class HepToInfluxDBServer {
   }
 
   /**
+   * Start HTTP/2 HEPv3 ingestion server (Bun-specific)
+   * Only enabled if http2Port and http2Endpoint are set in config
+   */
+  startHttp2Server() {
+    const port = this.config.http2Port;
+    const host = this.config.http2BindAddress || '0.0.0.0';
+    const endpoint = this.config.http2Endpoint;
+    this.http2Server = Bun.serve({
+      port,
+      hostname: host,
+      http2: true,
+      fetch: async (req) => {
+        const url = new URL(req.url);
+        if (req.method === 'POST' && url.pathname === endpoint) {
+          try {
+            // Accept only application/octet-stream
+            if (req.headers.get('content-type') !== 'application/octet-stream') {
+              return new Response('Unsupported Media Type', { status: 415 });
+            }
+            // Convert request body to Buffer
+            const data = Buffer.from(await req.arrayBuffer());
+            // Dummy socket for logging/statistics
+            const dummySocket = { remoteAddress: req.headers.get('x-forwarded-for') || req.headers.get('host') };
+            this.handleData(data, dummySocket);
+            return new Response('OK', { status: 200 });
+          } catch (err) {
+            if (this.config.debug) console.error('HEPv3 HTTP/2 error:', err);
+            return new Response('HEPv3 Error', { status: 400 });
+          }
+        }
+        return new Response('Not Found', { status: 404 });
+      }
+    });
+    console.log(`HEP HTTP/2 Server listening on ${host}:${port}${endpoint}`);
+  }
+
+  /**
    * Shutdown the server
    */
   async shutdown() {
@@ -274,6 +320,16 @@ class HepToInfluxDBServer {
       }
     }
     
+    // Stop HTTP/2 server if running
+    if (this.http2Server) {
+      try {
+        this.http2Server.stop(true);
+        this.http2Server = null;
+      } catch (error) {
+        console.error('Error stopping HTTP/2 server:', error);
+      }
+    }
+    
     console.log('Server shutdown complete');
     
     // Final stats
@@ -287,7 +343,11 @@ class HepToInfluxDBServer {
 if (require.main === module) {
   const server = new HepToInfluxDBServer({
     debug: true,
-    writeToFile: false
+    writeToFile: false,
+    // Example: enable HTTP/2 HEPv3 ingestion
+    // http2Port: 8080,
+    // http2BindAddress: '0.0.0.0',
+    // http2Endpoint: '/test/api',
   });
   
   server.initialize().catch(error => {
